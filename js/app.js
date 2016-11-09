@@ -10,9 +10,14 @@ $(document).ready(function () {
     function ajax() {
         var xhttp = new XMLHttpRequest();
 
+        var ville = dropList[0].value;
+        var sexe = dropList[1].value;
+        var codeprojet = dropList[2].value;
+
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 console.log(this.responseText);
+                createThreadHtml();
             }
 
             else if (this.readyState == 4 && this.status != 200) {
@@ -21,7 +26,8 @@ $(document).ready(function () {
         };
 
         xhttp.open('POST', "ajax.php", true);
-        xhttp.send();
+        xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhttp.send("ville=" + ville + "&sexe=" + sexe + "&codeprojet=" + codeprojet);
 
     }
 
@@ -46,7 +52,7 @@ $(document).ready(function () {
 
         eTable += "</tbody></table>";
         var tableau = document.getElementById("tabResult");
-        tableau.innerHTML = tableau;
+        tableau.innerHTML = eTable;
     }
 
 
