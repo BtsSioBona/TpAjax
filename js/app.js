@@ -1,10 +1,13 @@
 $(document).ready(function () {
 
+    // Creation des balises de selection
+    getSelect();
+
     // fonction de contact ajax
     var dropList = document.getElementsByClassName("ajSelect");
 
     for (var i = 0; i < dropList.length; i++) {
-        dropList[i].addEventListener('change', ajax)
+        dropList[i].addEventListener('change', ajax);
     }
 
     function ajax() {
@@ -67,6 +70,36 @@ $(document).ready(function () {
         tableau.innerHTML = eTable;
     }
 
+    function createOptionSelect(data) {
 
+        var options;
+
+        for(var i = 0; i < data.length; i++) {
+            options += "<option value=\"" + data[i].ville + "\">" +  data[i].ville + "</option>"
+        }
+
+        var selects = document.getElementById("selectVille");
+        selects.innerHTML = options;
+
+    }
+
+    function getSelect(parameters) {
+        var xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                createOptionSelect(JSON.parse(this.responseText));
+            }
+
+            else if (this.readyState == 4 && this.status != 200) {
+                console.log("Erreur ajax :" + this.status);
+            }
+        };
+
+        xhttp.open('POST', "ajax.php", true);
+        xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhttp.send("&action=getSelect");
+    }
 });
 

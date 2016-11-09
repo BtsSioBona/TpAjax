@@ -1,5 +1,8 @@
 <?php
 
+if (!isset($_POST["action"]))
+    die;
+
 
 if ($_POST["action"] === "getResult") {
 
@@ -24,4 +27,10 @@ if ($_POST["action"] === "getResult") {
         print "Erreur !: " . $e->getMessage() . "<br/>";
         die();
     }
+} elseif ($_POST["action"] === "getSelect") {
+
+    $connect = new PDO('mysql:host=localhost;dbname=tpajax', 'TpAjax', 'TpAjax');
+    $data = $connect->query("SELECT DISTINCT ville from personnel")->fetchAll();
+    echo json_encode($data);
+
 }
