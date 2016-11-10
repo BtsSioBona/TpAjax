@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     // Creation des balises de selection
-    getSelect();
+    getFirstSelect();
 
     // fonction de contact ajax
     var dropList = document.getElementsByClassName("ajSelect");
@@ -9,6 +9,9 @@ $(document).ready(function () {
     for (var i = 0; i < dropList.length; i++) {
         dropList[i].addEventListener('change', ajax);
     }
+
+    // Ajout d'un evenement sur la première droplist pour recharger les autres droplist
+    dropList[0].addEventListener('change', getOptionSelect);
 
     function ajax() {
         var xhttp = new XMLHttpRequest();
@@ -20,9 +23,7 @@ $(document).ready(function () {
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 createThreadHtml(JSON.parse(this.responseText));
-            }
-
-            else if (this.readyState == 4 && this.status != 200) {
+            } else if (this.readyState == 4 && this.status != 200) {
                 console.log("Erreur ajax :" + this.status);
             }
         };
@@ -70,12 +71,13 @@ $(document).ready(function () {
         tableau.innerHTML = eTable;
     }
 
-    function createOptionSelect(data) {
+    function createOptionVilleSelect(data) {
 
         var options;
 
-        for(var i = 0; i < data.length; i++) {
-            options += "<option value=\"" + data[i].ville + "\">" +  data[i].ville + "</option>"
+        options += "<option value=\"\" disabled selected>Choissisez une ville</option>";
+        for (var i = 0; i < data.length; i++) {
+            options += "<option value=\"" + data[i].ville + "\">" + data[i].ville + "</option>"
         }
 
         var selects = document.getElementById("selectVille");
@@ -83,23 +85,67 @@ $(document).ready(function () {
 
     }
 
-    function getSelect(parameters) {
+    function createOptionSexeSelect(data) {
+
+        var options;
+
+
+        options += "<option value=\"\" disabled selected>Choissisez un sexe</option>";
+        for (var i = 0; i < data.length; i++) {
+            options += "<option value=\"" + data[i].SEXE + "\">" + data[i].SEXE + "</option>"
+        }
+
+        var selects = document.getElementById("selectSexe");
+        selects.innerHTML = options;
+    }
+
+    function createOptionCodeProjetSelect(data) {
+
+        var options;
+
+        options += "<option value=\"\" disabled selected>Choissisez un code projet</option>";
+        for (var i = 0; i < data.length; i++) {
+            options += "<option value=\"" + data[i].CODEPROJET + "\">" + data[i].CODEPROJET + "</option>"
+        }
+
+        var selects = document.getElementById("selectCodeProjet");
+        selects.innerHTML = options;
+    }
+
+    function getFirstSelect(parameters) {
         var xhttp = new XMLHttpRequest();
 
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText);
-                createOptionSelect(JSON.parse(this.responseText));
-            }
-
-            else if (this.readyState == 4 && this.status != 200) {
+                createOptionVilleSelect(JSON.parse(this.responseText));
+            } else if (this.readyState == 4 && this.status != 200) {
                 console.log("Erreur ajax :" + this.status);
             }
         };
 
         xhttp.open('POST', "ajax.php", true);
         xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhttp.send("&action=getSelect");
+        xhttp.send("action=getFirstSelect");
+    }
+
+    function getOptionSelect() {
+        var ville = dropList[0].value;
+
+        var xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(JSON.parse(this.responseText));
+                createOptionSexeSelect(JSON.parse(this.responseText).sexe);
+                createOptionCodeProjetSelect(JSON.parse(this.responseText).codeprojet);
+            } else if (this.readyState == 4 && this.status != 200) {
+                console.log("Erreur ajax :" + this.status);
+            }
+        };
+
+        xhttp.open('POST', "ajax.php", true);
+        xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhttp.send("ville=" + ville + "&action=getSelect");
     }
 });
 
