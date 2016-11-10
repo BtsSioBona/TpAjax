@@ -7,15 +7,31 @@ if (!isset($_POST["action"]))
 if ($_POST["action"] === "getResult") {
 
     $ville = (!isset($_POST["ville"]) or empty($_POST["ville"])) ? 'Toulon' : $_POST["ville"];
-    $sexe = (!isset($_POST["sexe"]) or empty($_POST["sexe"])) ? 'M' : $_POST["sexe"];
-    $codeprojet = (!isset($_POST["codeprojet"]) or empty($_POST["codeprojet"])) ? 'PR1' : $_POST["codeprojet"];
+    $sexe = (!isset($_POST["sexe"]) or empty($_POST["sexe"])) ? '' : $_POST["sexe"];
+    $codeprojet = (!isset($_POST["codeprojet"]) or empty($_POST["codeprojet"])) ? '' : $_POST["codeprojet"];
 
     try {
         $connect = new PDO('mysql:host=localhost;dbname=tpajax', 'TpAjax', 'TpAjax');
         $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND SEXE = :sexe AND CODEPROJET = :codeprojet");
-        $personnel->bindParam(':ville', $ville);
-        $personnel->bindParam(':sexe', $sexe);
-        $personnel->bindParam(':codeprojet', $codeprojet);
+
+        if (empty($sexe) && empty($codeprojet)) {
+            $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville");
+            $personnel->bindParam(':ville', $ville);
+        }
+        elseif (empty($sexe) && !empty($codeprojet)) {
+            $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND CODEPROJET = :codeprojet");
+            $personnel->bindParam(':codeprojet', $codeprojet);
+            $personnel->bindParam(':ville', $ville);
+        } elseif (!empty($sexe) && empty($codeprojet)) {
+            $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND SEXE = :sexe");
+            $personnel->bindParam(':sexe', $sexe);
+            $personnel->bindParam(':ville', $ville);
+        } else {
+            $personnel->bindParam(':ville', $ville);
+            $personnel->bindParam(':sexe', $sexe);
+            $personnel->bindParam(':codeprojet', $codeprojet);
+        }
+
         $personnel->execute();
         $data = $personnel->fetchAll();
 
@@ -47,10 +63,10 @@ if ($_POST["action"] === "getResult") {
     try {
         $connect = new PDO('mysql:host=localhost;dbname=tpajax', 'TpAjax', 'TpAjax');
 
-        $sexe = $connect->prepare("SELECT DISTINCT SEXE FROM personnel WHERE VILLE = :ville AND SEXE IS NOT NULL");
+        $sexe = $connect->prepare("SELECT DISTINCT SEXE FROM personnel WHERE VILLE = :ville");
         $sexe->bindParam(':ville', $ville);
 
-        $codeProjet = $connect->prepare("SELECT DISTINCT CODEPROJET FROM personnel WHERE VILLE = :ville AND CODEPROJET IS NOT NULL");
+        $codeProjet = $connect->prepare("SELECT DISTINCT CODEPROJET FROM personnel WHERE VILLE = :ville");
         $codeProjet->bindParam(':ville', $ville);
 
         $sexe->execute();

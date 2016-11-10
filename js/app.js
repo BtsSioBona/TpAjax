@@ -1,3 +1,5 @@
+"use strict";
+
 $(document).ready(function () {
 
     // Creation des balises de selection
@@ -66,7 +68,7 @@ $(document).ready(function () {
         }
 
 
-        eTable += "</tbody></table>";
+        eTable += "</tbody>";
         var tableau = document.getElementById("tabResult");
         tableau.innerHTML = eTable;
     }
@@ -104,8 +106,17 @@ $(document).ready(function () {
         var options;
 
         options += "<option value=\"\" disabled selected>Choissisez un code projet</option>";
+
+        for (var j = 0; j < data.length; j++) {
+            if (data[j].CODEPROJET == null) {
+                options += "<option value=\"aucun\">Aucun</option>"
+            }
+        }
+
         for (var i = 0; i < data.length; i++) {
-            options += "<option value=\"" + data[i].CODEPROJET + "\">" + data[i].CODEPROJET + "</option>"
+            if (data[i].CODEPROJET != null) {
+                options += "<option value=\"" + data[i].CODEPROJET + "\">" + data[i].CODEPROJET + "</option>"
+            }
         }
 
         var selects = document.getElementById("selectCodeProjet");
@@ -135,7 +146,6 @@ $(document).ready(function () {
 
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(JSON.parse(this.responseText));
                 createOptionSexeSelect(JSON.parse(this.responseText).sexe);
                 createOptionCodeProjetSelect(JSON.parse(this.responseText).codeprojet);
             } else if (this.readyState == 4 && this.status != 200) {
