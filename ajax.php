@@ -17,13 +17,19 @@ if ($_POST["action"] === "getResult") {
         if (empty($sexe) && empty($codeprojet)) {
             $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville");
             $personnel->bindParam(':ville', $ville);
-        }
-        elseif (empty($sexe) && !empty($codeprojet)) {
+        } elseif (empty($sexe) && !empty($codeprojet)) {
             $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND CODEPROJET = :codeprojet");
             $personnel->bindParam(':codeprojet', $codeprojet);
             $personnel->bindParam(':ville', $ville);
         } elseif (!empty($sexe) && empty($codeprojet)) {
             $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND SEXE = :sexe");
+            $personnel->bindParam(':sexe', $sexe);
+            $personnel->bindParam(':ville', $ville);
+        } elseif (empty($sexe) && $codeprojet === "aucun") {
+            $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND CODEPROJET IS NULL");
+            $personnel->bindParam(':ville', $ville);
+        } elseif (!empty($sexe) && $codeprojet === "aucun") {
+            $personnel = $connect->prepare("SELECT * FROM personnel WHERE VILLE = :ville AND SEXE = :sexe AND CODEPROJET IS NULL");
             $personnel->bindParam(':sexe', $sexe);
             $personnel->bindParam(':ville', $ville);
         } else {

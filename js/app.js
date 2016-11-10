@@ -92,7 +92,7 @@ $(document).ready(function () {
         var options;
 
 
-        options += "<option value=\"\" disabled selected>Choissisez un sexe</option>";
+        options += "<option value=\"\" selected>Choissisez un sexe</option>";
         for (var i = 0; i < data.length; i++) {
             options += "<option value=\"" + data[i].SEXE + "\">" + data[i].SEXE + "</option>"
         }
